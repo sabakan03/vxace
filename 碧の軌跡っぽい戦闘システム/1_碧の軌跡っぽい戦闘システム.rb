@@ -1,6 +1,6 @@
 #==============================================================================
-# ■ 碧の軌跡っぽい戦闘システム17_2
-#   @version 0.28 12/03/08
+# ■ 碧の軌跡っぽい戦闘システム18
+#   @version 0.28 12/08/16
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　
@@ -294,13 +294,18 @@ class Scene_Battle
     calculate_battlers_speed
   end
   #--------------------------------------------------------------------------
-  # ● スキル／アイテムの使用
+  # ● スキル／アイテムの使用(再定義！)
   #--------------------------------------------------------------------------
   alias saba_kiski_battle_use_item use_item
   def use_item
-    saba_kiski_battle_use_item
-    return if @subject.current_action == nil
+    item = @subject.current_action.item
+    @log_window.display_use_item(@subject, item)
+    @subject.use_item(item)
+    refresh_status
     targets = @subject.current_action.make_targets.compact
+    show_animation(targets, item.animation_id)
+    targets.each {|target| item.repeats.times { invoke_item(target, item) } }
+  
     targets.each do |target|
       delay = target.result.delay_count
       if delay != 0
@@ -513,7 +518,6 @@ class Game_Battler
         @result.anti_cancel = false
         @result.fail_cancel = false
       end
-      
       @result.success = true if @result.delay_count != 0 || @result.cancel
     end
   end
