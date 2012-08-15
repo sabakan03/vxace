@@ -872,6 +872,7 @@ class Game_Map
   def tile_type(x, y)
     return DARK_ZONE if dark_zone?(x, y)
     id = @map.data[x, y, 0]
+    return nil unless id
     if id >= 1584 && id <= 1634
       return TYPE2_ZONE
     end
