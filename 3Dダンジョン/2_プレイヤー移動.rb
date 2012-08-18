@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョンプレイヤー移動
-#   @version 1.13_2 12/02/06
+#   @version 1.14 12/08/19
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ●内部的には2Dマップを歩いてるのと変わらない動作をしています。
@@ -476,8 +476,22 @@ class Game_Player
         when 6;  input_left
         when 8;  
       end
+    when ROUTE_MOVE_FORWARD;      input_up;
+    when ROUTE_MOVE_BACKWARD;     input_translate_down;
     else
       return super(command)
+    end
+  end
+  #--------------------------------------------------------------------------
+  # ● 移動ルートの実行位置を進める
+  #--------------------------------------------------------------------------
+  def advance_move_route_index
+    return super if $game_map.is_2d?
+    if ! @move_succeed && ! @move_route.skippable
+      # 移動できなかった場合は終了させる
+      process_route_end
+    else
+      return super
     end
   end
   #--------------------------------------------------------------------------
