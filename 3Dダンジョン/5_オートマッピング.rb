@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョン オートマッピング
-#   @version 1.4 12/08/19
+#   @version 1.5 12/08/27
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ■ 機能
@@ -417,6 +417,7 @@ class Sprite_AutoMapping < Sprite_Base
   # ○ プレイヤースプライトを作成
   #--------------------------------------------------------------------------
   def init_player_sprite(viewport, width, height)
+    return if @whole
     @player_sprite = Sprite.new(viewport)
     @player_sprite.bitmap = Bitmap.new(@player.width / 2, @player.height / 2)
     @player_sprite.ox = @start_ox - (width) / 2 + @player.width / 4
@@ -427,6 +428,7 @@ class Sprite_AutoMapping < Sprite_Base
   # ○ マーカースプライトを作成
   #--------------------------------------------------------------------------
   def init_marker_sprite(viewport, width, height)
+    return if @whole
     @marker_sprite = Sprite.new(viewport)
     @marker_sprite.bitmap = Bitmap.new(width, height)
     @marker_sprite.ox = @start_ox
@@ -447,10 +449,14 @@ class Sprite_AutoMapping < Sprite_Base
   def dispose
     super
     self.bitmap.dispose
-    @player_sprite.bitmap.dispose
-    @player_sprite.dispose
-    @marker_sprite.bitmap.dispose
-    @marker_sprite.dispose
+    if @player_sprite
+      @player_sprite.bitmap.dispose
+      @player_sprite.dispose
+    end
+    if @marker_sprite
+      @marker_sprite.bitmap.dispose
+      @marker_sprite.dispose
+    end
     $auto_mapping.listener = nil
   end
   #--------------------------------------------------------------------------
@@ -547,9 +553,9 @@ class Sprite_AutoMapping < Sprite_Base
     player_x = @cw * ($game_player.x + start_x) + (@cw - @player.width / 2) / 2
     player_y = @ch * ($game_player.y + start_y) + (@ch - @player.height / 2) / 2
   
-    draw_player(0, 0, @player_sprite.bitmap)
-    @player_sprite.ox = -player_x+@start_ox
-    @player_sprite.oy = -player_y+@start_oy
+   
+    draw_player(player_x, player_y, self.bitmap)
+
     
     if $game_player.x > width / 2
       @scroll_x = ($game_player.x - width / 2) * @cw
@@ -831,8 +837,8 @@ class Sprite_AutoMapping < Sprite_Base
   #--------------------------------------------------------------------------
   def visible=(value)
     super
-    @player_sprite.visible = value
-    @marker_sprite.visible = value
+    @player_sprite.visible = value if @player_sprite
+    @marker_sprite.visible = value if @marker_sprite
   end
   def update
     super
