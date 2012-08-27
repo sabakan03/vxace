@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョン オートマッピング
-#   @version 1.5 12/08/27
+#   @version 1.51 12/08/28
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ■ 機能
@@ -883,10 +883,10 @@ class Game_Map
     return DARK_ZONE if dark_zone?(x, y)
     id = @map.data[x, y, 0]
     return nil unless id
-    if id >= 1584 && id <= 1634
+    if id >= 1584 && id <= 1631
       return TYPE2_ZONE
     end
-    if id >= 1636 
+    if id >= 1632 
       return TYPE3_ZONE
     end
     return NORMAL_ZONE
