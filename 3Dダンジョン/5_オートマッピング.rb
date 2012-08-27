@@ -331,7 +331,11 @@ class Window_AutoMapping < Window_Base
   end
   def visible=(b)
     super
-    @sprite.visible = b
+    if $game_player.in_dark_zone? && b
+      # 何もしない
+    else
+      @sprite.visible = b
+    end
   end
   def dispose
     super
@@ -506,7 +510,7 @@ class Sprite_AutoMapping < Sprite_Base
   #--------------------------------------------------------------------------
   def draw_whole
     self.bitmap.clear_rect(0, 0, self.bitmap.width, self.bitmap.height)
-    
+  
     width = (@width) / @cw
     height = (@height) / @ch
     
