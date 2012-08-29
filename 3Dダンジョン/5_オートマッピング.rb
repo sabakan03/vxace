@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョン オートマッピング
-#   @version 1.51 12/08/28
+#   @version 1.6 12/08/30
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ■ 機能
@@ -213,7 +213,10 @@ class Game_AutoMapping
     key = [x, y, direction]
     return @gate_map[key] == true
   end
-  
+  def mapped?(x, y)
+    key = [x, y]
+    return @tile_map[key] != nil
+  end
 end
 
 class Scene_Map
@@ -915,19 +918,45 @@ class Game_Map
     end
   end
   #--------------------------------------------------------------------------
-  # ○ 指定のリージョンを踏破したか
+  # ○ 踏破率取得
   #--------------------------------------------------------------------------
-  def mapping_region(region_id)
+  def mapping_score
+    all = 0
+    mapped = 0
+    auto_mapping = $auto_mapping.map(@map_id)
     width.times do |x|
       height.times do |y|
-        id = region_id(x, y)
-        if id == region_id
-          $auto_mapping.mapping(@map_id, x, y)
+        if region_id(x, y) > 0
+          all += 1
+          mapped += 1 if auto_mapping.mapped?(x, y)
         end
       end
     end
+    return [all, mapped]
   end
   def name
     return @map.name
+  end
+end
+
+class Game_Interpreter
+  #--------------------------------------------------------------------------
+  # ○ 踏破率取得
+  #    map_id_list  踏破率を取得したいマップIDの配列(マップIDだけでもいけます)
+  #--------------------------------------------------------------------------
+  def mapping_rate(map_id_list)
+    all = 0
+    mapped = 0
+    unless map_id_list.is_a?(Array)
+      map_id_list = [map_id_list]
+    end
+    for id in map_id_list
+      map = Game_Map.new
+      map.setup(id)
+      score = map.mapping_score
+      all += score[0]
+      mapped += score[1]
+    end
+    return mapped * 100.0 / all
   end
 end
