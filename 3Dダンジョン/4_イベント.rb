@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョン イベント系
-#   @version 1.1 12/01/31
+#   @version 1.6 12/08/30
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　イベント名に設定できる文字一覧
@@ -398,6 +398,18 @@ class Game_Event
     return true if $game_map.gate?(x, y, d)
     return false if $game_map.wall?(x, y, d)
     return super
+  end
+  #--------------------------------------------------------------------------
+  # ● このイベントが消去されたか
+  #--------------------------------------------------------------------------
+  def erased?
+    return true if @erased
+    for page in @event.pages.reverse
+      if conditions_met?(page)
+        return if page.list.size == 0
+      end
+    end
+    return true
   end
 end
 
