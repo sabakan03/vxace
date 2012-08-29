@@ -305,3 +305,20 @@ class Game_Interpreter
     $game_map.put_to_random_place($game_player)
   end
 end
+
+class Game_BattlerBase
+  #--------------------------------------------------------------------------
+  # ● スキル／アイテムの使用可能時チェック
+  #--------------------------------------------------------------------------
+  alias saba_dungeon_occasion_ok? occasion_ok?
+  def occasion_ok?(item)
+    return false if item.only_in_random_dungeon? && ! $game_map.dungeon?
+    return saba_dungeon_occasion_ok?(item)
+  end
+end
+
+class RPG::BaseItem
+  def only_in_random_dungeon?
+    return self.note.include?("<random>")
+  end
+end
