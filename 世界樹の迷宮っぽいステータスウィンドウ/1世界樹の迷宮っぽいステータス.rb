@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽいバトルステータス
-#   @version 0.14 2012/08/22
+#   @version 0.14 2012/09/04
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　武器防具のメモ欄に <長射程> と記述すると、
@@ -583,7 +583,7 @@ class Window_BattleStatus
     super
   end
   def visible=(arg)
-    @windows.each { |w| w.visible = arg}
+    @windows.each { |w| w.visible = arg; w.update}
     super
   end
   def close
@@ -778,7 +778,6 @@ class Spriteset_Battle
   alias saba_sekaiju_update_viewports update_viewports
   def update_viewports
     saba_sekaiju_update_viewports
-    @viewport_sekaiju.tone.set($game_troop.screen.tone)
     @viewport_sekaiju.ox = $game_troop.screen.shake
   
     @viewport_sekaiju.update
