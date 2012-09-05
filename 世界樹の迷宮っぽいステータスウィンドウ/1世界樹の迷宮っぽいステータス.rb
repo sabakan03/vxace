@@ -306,7 +306,7 @@ class Scene_ItemBase < Scene_MenuBase
   def create_actor_window
     @actor_window = Window_BattleStatus.new
     @actor_window.visible = true
-    @actor_window.x = (Graphics.width - @status_window.width) / 2
+    @actor_window.x = (Graphics.width - @actor_window.width) / 2
     @actor_window.y = Graphics.height - 120
     @actor_window.set_handler(:ok,     method(:on_actor_ok))
     @actor_window.set_handler(:cancel, method(:on_actor_cancel))
