@@ -279,8 +279,8 @@ class Scene_Menu
   def create_status_window
     @status_window = Window_BattleStatus.new
     @status_window.visible = true
-    @status_window.x = 64
-    @status_window.y = Graphics.height-120
+    @status_window.x = (Graphics.width - @status_window.width) / 2
+    @status_window.y = Graphics.height - 120
   end
   #--------------------------------------------------------------------------
   # ● 並び替え［決定］
@@ -306,8 +306,8 @@ class Scene_ItemBase < Scene_MenuBase
   def create_actor_window
     @actor_window = Window_BattleStatus.new
     @actor_window.visible = true
-    @actor_window.x = 64
-    @actor_window.y = Graphics.height-120
+    @actor_window.x = (Graphics.width - @status_window.width) / 2
+    @actor_window.y = Graphics.height - 120
     @actor_window.set_handler(:ok,     method(:on_actor_ok))
     @actor_window.set_handler(:cancel, method(:on_actor_cancel))
   end
@@ -536,17 +536,17 @@ class Window_BattleStatus
     @windows.each { |w| w.dispose }
 
     @windows.clear
-    
+
     $game_party.front_members.each_with_index do |actor, i|
 
       start = start_x($game_party.front_members.size)
-      window = Window_BattleActorStatus.new(self.viewport, actor, i, start + i * 171, 0)
+      window = Window_BattleActorStatus.new(self.viewport, actor, i, start + i * subwindow_width, 0, subwindow_width)
       @windows.push(window)
     end
     
     $game_party.back_members.each_with_index do |actor, i|
       start = start_x($game_party.back_members.size)
-      window = Window_BattleActorStatus.new(self.viewport, actor, i, start + i * 171, 60)
+      window = Window_BattleActorStatus.new(self.viewport, actor, i, start + i * subwindow_width, 60, subwindow_width)
       @windows.push(window)
     end
     
@@ -557,14 +557,20 @@ class Window_BattleStatus
     }
   end
   #--------------------------------------------------------------------------
+  # ○ サブウィンドウの幅取得
+  #--------------------------------------------------------------------------
+  def subwindow_width
+    return self.width / 3 + 1
+  end
+  #--------------------------------------------------------------------------
   # ○ サブウィンドウの左端の座標取得
   #--------------------------------------------------------------------------
   def start_x(member_count)
     case member_count
       when 1
-        return 171
+        return subwindow_width
       when 2
-        return 85
+        return subwindow_width / 2
       else
         return 0
     end
@@ -665,9 +671,9 @@ class Window_BattleStatus
 end
 
 class Window_BattleActorStatus < Window_Base
-  def initialize(viewport, actor, index, x, y)
-    w = index == 2 ? 170 : 171
-    super(x, y, w, 60)
+  def initialize(viewport, actor, index, x, y, width)
+    width += 1 if index == 2
+    super(x, y, width, 60)
     @start_x = x
     @start_y = y
    
@@ -696,6 +702,9 @@ class Window_BattleActorStatus < Window_Base
       self.windowskin = Cache.system("Window")
     end
   end
+  #--------------------------------------------------------------------------
+  # ● リフレッシュ
+  #--------------------------------------------------------------------------
   def refresh
     contents.clear
     return unless @actor
