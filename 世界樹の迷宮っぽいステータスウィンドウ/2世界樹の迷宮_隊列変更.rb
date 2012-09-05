@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽいバトルステータス 隊列変更
-#   @version 0.11  2012/04/06
+#   @version 0.15  2012/09/06
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　
@@ -30,7 +30,7 @@ class Scene_ChangeFormation < Scene_MenuBase
     @formation = Window_Formation.new(@change_party, 330, 60, 145, (FORMATION_MEMBERS + 1) * 24 + 32)
     @formation.active = false
     @status_window = Window_BattleStatus.new
-    @status_window.x = 64
+    @status_window.x = (Graphics.width - @status_window.width) / 2
     @status_window.y = Graphics.height-120
     @status_window.visible = true
     @status_window.deactivate
