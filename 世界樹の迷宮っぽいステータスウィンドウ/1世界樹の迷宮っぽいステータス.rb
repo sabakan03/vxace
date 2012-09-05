@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽいバトルステータス
-#   @version 0.14 2012/09/04
+#   @version 0.15 2012/09/06
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　武器防具のメモ欄に <長射程> と記述すると、
@@ -441,16 +441,12 @@ class Window_BattleStatus
     if $game_party.front_members.size > @index
         @index += $game_party.front_members.size
         @index = $game_party.battle_members.size - 1 if @index >= $game_party.battle_members.size
-       # unless Saba::Sekaiju::SHOW_EMPTY_ACTOR_STATUS
-          @index = 2 if $game_party.back_members.size == 3 && $game_party.front_members.size == 1
-        #end
+        @index = 2 if $game_party.back_members.size == 3 && $game_party.front_members.size == 1
       else
         @index -= $game_party.front_members.size
         @index = 0 if @index < 0
         @index = $game_party.front_members.size - 1 if @index >= $game_party.front_members.size
-       # unless Saba::Sekaiju::SHOW_EMPTY_ACTOR_STATUS
-          @index = 1 if $game_party.back_members.size == 1 && $game_party.front_members.size == 3
-       # end
+        @index = 1 if $game_party.back_members.size == 1 && $game_party.front_members.size == 3
      end
      select(@index)
   end
@@ -505,6 +501,9 @@ class Window_BattleStatus
   def update_cursor
     # 何もしない
   end
+  #--------------------------------------------------------------------------
+  # ● フレーム更新
+  #--------------------------------------------------------------------------
   def update
     super
     @windows.each { |w| w.update }
@@ -527,6 +526,9 @@ class Window_BattleStatus
        @windows.each { |w| w.refresh}
     end
   end
+  #--------------------------------------------------------------------------
+  # ○ サブウィンドウの作成
+  #--------------------------------------------------------------------------
   def create_windows
     @last_fronts = $game_party.front_members.size
     @last_backs = $game_party.back_members.size
@@ -554,6 +556,9 @@ class Window_BattleStatus
       w.visible = self.visible && open?
     }
   end
+  #--------------------------------------------------------------------------
+  # ○ サブウィンドウの左端の座標取得
+  #--------------------------------------------------------------------------
   def start_x(member_count)
     case member_count
       when 1
@@ -568,7 +573,7 @@ class Window_BattleStatus
   # ● 項目の描画
   #--------------------------------------------------------------------------
   def draw_item(index)
-   
+    # 何もしない
   end
   def viewport=(arg)
     super
@@ -671,41 +676,18 @@ class Window_BattleActorStatus < Window_Base
       @actor.screen_x = @start_x + 140
       @actor.screen_y = @start_y + 410
     end
-    @canvas = Window_BattleActorStatusCanvas.new(viewport, actor, x, y)
+   
     self.viewport = viewport
     refresh
   end
   def actor
     return @actor
   end
-  def refresh
-    @canvas.refresh
-  end
-  def viewport=(arg)
-    super
-    @canvas.viewport = arg
-  end
-  def visible=(arg)
-    super
-    @canvas.visible = arg
-    self
-  end
-  def x=(arg)
-    @canvas.x = arg
-    super
-  end
-  def y=(arg)
-    @canvas.y = arg
-    super
-  end
   def parent_x=(arg)
     self.x = arg + @start_x
-    @canvas.x = arg + @start_x
-    
   end
   def parent_y=(arg)
     self.y = arg + @start_y
-    @canvas.y = arg + @start_y - 6
   end
   def select(b)
     if b
@@ -714,33 +696,16 @@ class Window_BattleActorStatus < Window_Base
       self.windowskin = Cache.system("Window")
     end
   end
-  def dispose
-    @canvas.dispose
-    super
-  end
-  def update
-    super
-    @canvas.update
-  end
-end
-
-class Window_BattleActorStatusCanvas < Window_Base
-  def initialize(viewport, actor, x, y)
-    super(x - 4, y - 6, 180, 80)
-    self.viewport = viewport
-    self.opacity = 0
-    @actor = actor
-  end
   def refresh
     contents.clear
     return unless @actor
 
-    draw_actor_hp(actor, 0, 22, 69)
-    draw_actor_mp(actor, 77, 22, 69)
-    draw_actor_tp(actor, 0, 2, 69) if $data_system.opt_display_tp
+    draw_actor_hp(actor, 6 ,22, 69)
+    draw_actor_mp(actor, 83, 22, 69)
+    draw_actor_tp(actor, 6, 2, 69) if $data_system.opt_display_tp
     
-    draw_actor_name(@actor, 0, 0, 78)
-    draw_actor_icons(@actor, 80, 0, 80)
+    draw_actor_name(@actor, 6, 0, 78)
+    draw_actor_icons(@actor, 86, 0, 80)
   end
   #--------------------------------------------------------------------------
   # ● TP の描画
@@ -748,8 +713,11 @@ class Window_BattleActorStatusCanvas < Window_Base
   def draw_actor_tp(actor, x, y, width = 124)
     draw_gauge(x, y, width, actor.tp_rate, tp_gauge_color1, tp_gauge_color2)
   end
-  def actor
-    @actor
+  #--------------------------------------------------------------------------
+  # ● 標準パディングサイズの取得
+  #--------------------------------------------------------------------------
+  def standard_padding
+    return 6
   end
 end
 
@@ -779,12 +747,10 @@ class Spriteset_Battle
   def update_viewports
     saba_sekaiju_update_viewports
     @viewport_sekaiju.ox = $game_troop.screen.shake
-  
     @viewport_sekaiju.update
-
   end
   def create_actors
-    @actor_sprites = Array.new(Saba::Sekaiju::MAX_MEMBERS) { Sprite_Battler.new(@viewport_sekaiju) }
+    @actor_sprites = Array.new($game_party.battle_members.size) { Sprite_Battler.new(@viewport_sekaiju) }
   end
 end
 
@@ -850,7 +816,6 @@ class Game_Action
         members = opponents_unit.alive_backs
       end
     end
-    
     
     if members
       if members.size == 0
