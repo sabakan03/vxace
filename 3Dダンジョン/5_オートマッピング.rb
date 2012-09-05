@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョン オートマッピング
-#   @version 1.6 12/08/30
+#   @version 1.7 12/09/05
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ■ 機能
@@ -380,6 +380,7 @@ class Sprite_AutoMapping < Sprite_Base
     init_marker_sprite(viewport, width, height)
     init_player_sprite(viewport, width, height)
     
+    @last_map_id = $game_map.map_id
     init_max_scroll
     update_player
     update_src_rect
@@ -772,6 +773,11 @@ class Sprite_AutoMapping < Sprite_Base
   # ● 指定の画面座標に、指定のマップ座標のタイル及び隣接する壁を描画します。
   #--------------------------------------------------------------------------
   def draw_mapping_elements(x, y, map_x, map_y)
+    if @last_map_id != $game_map.map_id
+      self.bitmap.dispose
+      init_bitmap(self.width, self.height)
+      @last_map_id = $game_map.map_id
+    end
     draw_tile(x, y, map_x, map_y)
     return if $game_map.dark_zone?(map_x, map_y)
     draw_wall(x, y, map_x, map_y)
@@ -942,6 +948,7 @@ end
 class Game_Interpreter
   #--------------------------------------------------------------------------
   # ○ 踏破率取得
+  #    何かしらリージョンで塗られているタイルだけを見て判定します。
   #    map_id_list  踏破率を取得したいマップIDの配列(マップIDだけでもいけます)
   #--------------------------------------------------------------------------
   def mapping_rate(map_id_list)
