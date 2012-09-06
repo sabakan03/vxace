@@ -1,8 +1,9 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽい戦闘画面
-#   @version 0.1 2012/09/06
+#   @version 0.3 2012/09/06
 #   @author さば缶
 #------------------------------------------------------------------------------
+#   ※ Graphics/Pictures フォルダにアクター画像があれば、戦闘中に表示します。
 #==============================================================================
 
 module Saba
@@ -17,8 +18,8 @@ module Saba
     
     # アクターごとの顔グラの座標修正値。アクターIDがキー
     # y座標は下揃え
-    FACE_OFFSETR_X = {1=>20, 2=>-95, 3=>160}
-    FACE_OFFSETR_Y = {2=>120}
+    FACE_OFFSET_X = {1=>20, 2=>-95, 3=>160}
+    FACE_OFFSET_Y = {2=>120}
     
     # パーティーコマンドを有効にする場合true
     ENABLE_PARTY_COMMAND = false
@@ -152,6 +153,7 @@ class Scene_Battle
     else
       if ENABLE_PARTY_COMMAND
         start_party_command_selection
+        @actor_command_window.clear
       else
         next_command
       end
@@ -313,12 +315,17 @@ class Sprite_SekaijuFace < Sprite_Base
   def refresh
     return unless @actor
     self.bitmap.clear
-    image = Cache.picture("Actor" + @actor.id.to_s)
+    begin
+      image = Cache.picture("Actor" + @actor.id.to_s)
+    rescue SystemCallError
+      p "Graphics/Pictures/Actor#{@actor.id} が見つかりません。"
+      return
+    end
     x = 100
     y = FACE_Y - image.rect.height
     
-    x += FACE_OFFSETR_X[@actor.id] if FACE_OFFSETR_X[@actor.id]
-    y += FACE_OFFSETR_Y[@actor.id] if FACE_OFFSETR_Y[@actor.id]
+    x += FACE_OFFSET_X[@actor.id] if FACE_OFFSET_X[@actor.id]
+    y += FACE_OFFSET_Y[@actor.id] if FACE_OFFSET_Y[@actor.id]
     self.bitmap.blt(x, y, image, image.rect)
   end
   #--------------------------------------------------------------------------
@@ -498,6 +505,10 @@ class Window_ActorCommand
     current_ox = self.viewport.ox
     self.viewport.ox = [ox, current_ox + self.width/3].min if current_ox < ox
     self.viewport.ox = [ox, current_ox - self.width/3].max if current_ox > ox
+  end
+  def clear
+    @actor = nil
+    @face_sprite.actor = nil
   end
 end
 
