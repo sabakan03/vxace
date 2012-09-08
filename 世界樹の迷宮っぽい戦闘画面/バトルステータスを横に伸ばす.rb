@@ -8,6 +8,14 @@ class Window_BattleStatus
 end
 
 class Window_BattleActorStatus 
+  
+  alias saba_sekaiju2_initialize initialize
+  def initialize(viewport, actor, index, x, y, width)
+    saba_sekaiju2_initialize(viewport, actor, index, x, y, width)
+    if @actor
+      @actor.screen_x = @start_x + 100
+    end
+  end
   #--------------------------------------------------------------------------
   # ● リフレッシュ
   #--------------------------------------------------------------------------
@@ -22,4 +30,5 @@ class Window_BattleActorStatus
     draw_actor_name(@actor, 6, 0, 98)
     draw_actor_icons(@actor, 102, 0, 100)
   end
+  
  end
