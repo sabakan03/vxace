@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽいバトルステータス
-#   @version 0.15 2012/09/06
+#   @version 0.16 2012/09/08
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　武器防具のメモ欄に <長射程> と記述すると、
@@ -935,5 +935,16 @@ class << DataManager
     if $data_states[Saba::Sekaiju::FRONT_STATE_ID] == nil || $data_states[Saba::Sekaiju::BACK_STATE_ID2] == nil
       msgbox_p "Error!! 世界樹の迷宮っぽいステータス画面プロジェクトからステート31～33をコピーしてください"
     end
+  end
+end
+
+class Sprite_Battler
+  #--------------------------------------------------------------------------
+  # ● 可視状態の初期化
+  #--------------------------------------------------------------------------
+  alias saba_sekaiju_init_visibility init_visibility
+  def init_visibility
+    saba_sekaiju_init_visibility
+    self.opacity = 255 if @battler.actor?
   end
 end
