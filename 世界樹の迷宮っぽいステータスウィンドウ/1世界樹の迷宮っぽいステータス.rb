@@ -877,8 +877,8 @@ class Game_Action
 end
 
 class Sprite_Base
-    #--------------------------------------------------------------------------
-  # ● アニメーションの原点設定
+  #--------------------------------------------------------------------------
+  # ● アニメーションの原点設定(再定義)
   #--------------------------------------------------------------------------
   def set_animation_origin
     if @animation.position == 3
@@ -895,6 +895,7 @@ class Sprite_Base
       @ani_oy = y - oy + height / 2
       if @animation.position == 0
         @ani_oy -= height / 2
+        @ani_oy -= 200 if @battler && @battler.actor?
       elsif @animation.position == 2
         @ani_oy += height / 2
       end
