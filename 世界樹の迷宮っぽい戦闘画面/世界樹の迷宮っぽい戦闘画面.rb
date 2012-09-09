@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽい戦闘画面
-#   @version 0.3 2012/09/06
+#   @version 0.3 2012/09/09
 #   @author さば缶
 #------------------------------------------------------------------------------
 #   ※ Graphics/Pictures フォルダにアクター画像があれば、戦闘中に表示します。
@@ -393,6 +393,7 @@ class Window_ActorCommand
   alias saba_sekaiju2_setup setup
   def setup(actor)
     show
+    self.openness = 255
     if @actor != actor
       select(0)
       @to_appear = false
@@ -400,7 +401,6 @@ class Window_ActorCommand
       activate
       return
     end
-    self.openness = 255
     @actor = actor
     @face_sprite.actor = actor
     activate
