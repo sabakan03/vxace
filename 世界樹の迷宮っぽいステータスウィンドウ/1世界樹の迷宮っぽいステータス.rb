@@ -29,7 +29,7 @@ module Saba
     MAX_CHAR_NAME = 6
     
     # メニュー画面ではデフォルトのものを使用する場合 true
-    ENABLE_DEFAULT_MENU_STATUS = true
+    ENABLE_DEFAULT_MENU_STATUS = false
   end
 end
 
