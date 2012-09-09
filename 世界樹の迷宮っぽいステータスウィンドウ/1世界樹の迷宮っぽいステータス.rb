@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽいバトルステータス
-#   @version 0.16 2012/09/08
+#   @version 0.16 2012/09/09
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　武器防具のメモ欄に <長射程> と記述すると、
@@ -25,8 +25,11 @@ module Saba
     # 戦闘中、味方へのスキルにもアニメーションを表示する場合 true
     ENABLE_ACTOR_ANIME = true
     
+    # キャラ名の最大値
     MAX_CHAR_NAME = 6
     
+    # メニュー画面ではデフォルトのものを使用する場合 true
+    ENABLE_DEFAULT_MENU_STATUS = true
   end
 end
 
@@ -276,17 +279,22 @@ class Game_Enemy
 end
 
 class Scene_Menu
-  def create_status_window
-    @status_window = Window_BattleStatus.new
-    @status_window.visible = true
-    @status_window.x = (Graphics.width - @status_window.width) / 2
-    @status_window.y = Graphics.height - 120
-  end
   #--------------------------------------------------------------------------
   # ● 並び替え［決定］
   #--------------------------------------------------------------------------
   def command_formation
     SceneManager.call(Scene_ChangeFormation)
+  end
+end
+
+#--------------------------------------------------------------------------
+unless Saba::Sekaiju::ENABLE_DEFAULT_MENU_STATUS
+class Scene_Menu
+  def create_status_window
+    @status_window = Window_BattleStatus.new
+    @status_window.visible = true
+    @status_window.x = (Graphics.width - @status_window.width) / 2
+    @status_window.y = Graphics.height - 120
   end
   #--------------------------------------------------------------------------
   # ● ゴールドウィンドウの作成
@@ -361,6 +369,11 @@ class Scene_Skill < Scene_ItemBase
     @command_window.skill_window = @item_window
   end
 end
+end
+#--------------------------------------------------------------------------
+#  ENABLE_DEFAULT_MENU_STATUS ここまで
+#--------------------------------------------------------------------------
+
 
 class Window_BattleActor < Window_BattleStatus
   #--------------------------------------------------------------------------
@@ -946,5 +959,18 @@ class Sprite_Battler
   def init_visibility
     saba_sekaiju_init_visibility
     self.opacity = 255 if @battler.actor?
+  end
+end
+
+
+class RPG::UsableItem
+  alias saba_sekaiju_need_selection? need_selection?
+  def need_selection?
+    if $game_party.in_battle && target_line?
+      # 対象が列のスキルは戦闘中は必ず選択が必要
+      return true
+    else
+      return saba_sekaiju_need_selection?
+    end
   end
 end
