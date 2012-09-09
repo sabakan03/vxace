@@ -778,6 +778,15 @@ end
 
 class Scene_Battle
   #--------------------------------------------------------------------------
+  # ● アクターコマンド選択の開始
+  #--------------------------------------------------------------------------
+  alias saba_sekaiju_start_actor_command_selection start_actor_command_selection
+  def start_actor_command_selection
+    saba_sekaiju_start_actor_command_selection
+    @item = nil
+    @skill = nil
+  end
+  #--------------------------------------------------------------------------
   # ● アクター選択の開始
   #--------------------------------------------------------------------------
   alias saba_sekaiju_select_actor_selection select_actor_selection
