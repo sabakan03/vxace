@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽい戦闘画面
-#   @version 0.3 2012/09/09
+#   @version 0.31 2012/09/09
 #   @author さば缶
 #------------------------------------------------------------------------------
 #   ※ Graphics/Pictures フォルダにアクター画像があれば、戦闘中に表示します。
@@ -253,7 +253,10 @@ class Window_BattleEnemy < Window_Selectable
   # ○ 選択されている敵の取得
   #--------------------------------------------------------------------------
   def selected_enemy
-    return $game_troop.alive_members[self.index]
+    e = $game_troop.alive_members[self.index]
+    return e if e
+    self.index = 0
+    $game_troop.alive_members[self.index]
   end
   #--------------------------------------------------------------------------
   # ● ヘルプウィンドウの更新
