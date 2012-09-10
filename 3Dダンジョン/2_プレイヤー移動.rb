@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョンプレイヤー移動
-#   @version 1.6 12/08/30
+#   @version 1.7 12/09/10
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ●内部的には2Dマップを歩いてるのと変わらない動作をしています。
@@ -165,6 +165,7 @@ class Game_Player
   #--------------------------------------------------------------------------
   alias saba_3d_move_by_input move_by_input
   def move_by_input
+    return if $game_switches[DISABLE_KEY_INPUT]
     return if @move_route_forcing
     if $game_map.is_2d?
       saba_3d_move_by_input

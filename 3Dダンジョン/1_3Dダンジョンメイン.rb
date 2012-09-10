@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョン
-#   @version 1.5 12/08/27
+#   @version 1.7 12/09/10
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ■ 使い方
@@ -45,6 +45,9 @@ module Saba
     # 表示したままにする場合 ON にするスイッチの番号です。
     SHOW_STATUS_AT_MESSAGE_SWITCH = 110
 
+    # キー入力による移動を禁止にするスイッチの番号です。
+    DISABLE_KEY_INPUT = 113
+    
     # ステータスウィンドウ、オートマップウィンドウ
     # 全てを非表示にするスイッチの番号です。
     HIDE_ALL_SWITCH = 114
@@ -300,6 +303,14 @@ class Scene_Map
     else
       saba_3d_update_call_menu
     end
+  end
+  #--------------------------------------------------------------------------
+  # ● シーン遷移の可能判定
+  #--------------------------------------------------------------------------
+  alias saba_3d_scene_change_ok? scene_change_ok?
+  def scene_change_ok?
+    return false if $game_switches[Saba::Three_D::DISABLE_KEY_INPUT]
+    return saba_3d_scene_change_ok?
   end
 end
 
