@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽい戦闘画面
-#   @version 0.31 2012/09/09
+#   @version 0.4 2012/09/12
 #   @author さば缶
 #------------------------------------------------------------------------------
 #   ※ Graphics/Pictures フォルダにアクター画像があれば、戦闘中に表示します。
@@ -33,13 +33,16 @@ module Saba
     SKILL_WINDOW_Y = 130
     
     # 敵選択カーソルの座標。敵の座標からの相対値
-    CURSOR_X = -63
+    CURSOR_X = -65
     CURSOR_Y = 90
     
     # 敵選択カーソル内でのHPバーの座標と長さ
     GAUGE_X = 30
     GAUGE_Y = -8
     GAUGE_WIDTH = 73
+    
+    # 敵のHPを表示しない場合 true に設定します
+    HIDE_ENEMY_HP = false
   end
 end
 
@@ -222,11 +225,16 @@ class Window_BattleEnemy < Window_Selectable
   #--------------------------------------------------------------------------
   def refresh
     cursor_rect.empty
-    self.contents.clear
-    img = Cache.system("enemy_cursor")
     enemy = selected_enemy
-    self.contents.blt(enemy.screen_x + CURSOR_X, CURSOR_Y, img, img.rect)
-    draw_gauge(enemy.screen_x + CURSOR_X + GAUGE_X, CURSOR_Y + GAUGE_Y, GAUGE_WIDTH, enemy.hp_rate, hp_gauge_color1, hp_gauge_color2)
+    self.contents.clear
+    if HIDE_ENEMY_HP
+      img = Cache.system("enemy_cursor2")
+      self.contents.blt(enemy.screen_x + CURSOR_X, CURSOR_Y, img, img.rect)
+    else
+      img = Cache.system("enemy_cursor")
+      self.contents.blt(enemy.screen_x + CURSOR_X, CURSOR_Y, img, img.rect)
+      draw_gauge(enemy.screen_x + CURSOR_X + GAUGE_X, CURSOR_Y + GAUGE_Y, GAUGE_WIDTH, enemy.hp_rate, hp_gauge_color1, hp_gauge_color2)
+    end
   end
   #--------------------------------------------------------------------------
   # ● 項目の選択
