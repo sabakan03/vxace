@@ -1,6 +1,6 @@
 #==============================================================================
-# ■ イベントの挙動変更7
-#   @version 0.16 12/08/29 RGSS3
+# ■ イベントの挙動変更8
+#   @version 0.17 12/09/16 RGSS3
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　イベントの移動頻度が最高の場合、
@@ -99,6 +99,7 @@ class Game_Event
   #--------------------------------------------------------------------------
   alias saba_dungeon_check_event_trigger_touch check_event_trigger_touch
   def check_event_trigger_touch(x, y)
+    return saba_dungeon_check_event_trigger_touch(x, y) unless $game_map.dungeon?
     return if stop_by_encounter?
     return if $game_map.interpreter.running?
     return if @starting
