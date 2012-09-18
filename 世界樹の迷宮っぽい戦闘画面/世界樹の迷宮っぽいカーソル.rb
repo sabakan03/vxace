@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽい敵選択カーソル
-#   @version 0.2 2012/09/17
+#   @version 0.3 2012/09/19
 #   @author さば缶
 #------------------------------------------------------------------------------
 #   ※ Graphics/System フォルダの画像が必要です。
@@ -8,6 +8,8 @@
 
 module Saba
   module Sekaiju3
+    # ヘルプウィンドウのサイズ
+    HELP_WINDOW_WIDTH = 544
     
     # 敵選択カーソルの座標。敵の座標からの相対値
     CURSOR_X = -65
@@ -69,6 +71,9 @@ class Window_BattleEnemy < Window_Selectable
     self.visible = false
     self.opacity = 0
     @help_window = Window_Help.new(1)
+    @help_window.width = HELP_WINDOW_WIDTH
+    @help_window.x = (Graphics.width - HELP_WINDOW_WIDTH) / 2
+    @help_window.create_contents
     @help_window.hide
   end
   #--------------------------------------------------------------------------
@@ -132,6 +137,7 @@ class Window_BattleEnemy < Window_Selectable
     self.index = index
     refresh
     call_update_help
+    call_handler(:change)
   end
   #--------------------------------------------------------------------------
   # ● 項目の描画
