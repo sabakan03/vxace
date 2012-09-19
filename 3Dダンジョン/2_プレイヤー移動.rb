@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョンプレイヤー移動
-#   @version 1.7 12/09/10
+#   @version 1.9 12/09/20
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ●内部的には2Dマップを歩いてるのと変わらない動作をしています。
@@ -181,7 +181,7 @@ class Game_Player
       return
     end
     
-    if Input.press?(Input::C)
+    if Input.press?(SIDLE_ALONG_BUTTON)
       unless Input.press?(Input::UP)
         translate
         return
@@ -193,22 +193,22 @@ class Game_Player
     elsif Input.trigger?(Input::RIGHT)
       input_right
     elsif Input.trigger?(Input::DOWN)
-      if Saba::Three_D::ENABLE_TRANSLATION_WITH_DOWN
+      if ENABLE_TRANSLATION_WITH_DOWN
         input_translate_down
       else
         input_down
       end
     elsif Input.press?(Input::DOWN)
-      return unless Saba::Three_D::ENABLE_TRANSLATION_WITH_DOWN
+      return unless ENABLE_TRANSLATION_WITH_DOWN
       input_down
     elsif Input.press?(Input::UP)
       input_up
       @move_failed = false
     elsif Input.press?(Input::L)
-      return unless Saba::Three_D::ENABLE_TRANSLATION_WITH_LR
+      return unless ENABLE_TRANSLATION_WITH_LR
       input_translate_left
     elsif Input.press?(Input::R)
-      return unless Saba::Three_D::ENABLE_TRANSLATION_WITH_LR
+      return unless ENABLE_TRANSLATION_WITH_LR
       input_translate_right
     end
   end
@@ -223,10 +223,10 @@ class Game_Player
     elsif Input.press?(Input::DOWN)
       input_translate_down
     elsif Input.press?(Input::L)
-      return unless Saba::Three_D::ENABLE_TRANSLATION_WITH_LR
+      return unless ENABLE_TRANSLATION_WITH_LR
       input_translate_left
     elsif Input.press?(Input::R)
-      return unless Saba::Three_D::ENABLE_TRANSLATION_WITH_LR
+      return unless ENABLE_TRANSLATION_WITH_LR
       input_translate_right
     end
   end
@@ -237,20 +237,20 @@ class Game_Player
     if Input.press?(Input::UP)
       return
     elsif Input.trigger?(Input::RIGHT)
-      @translate = Input.press?(Input::C)
+      @translate = Input.press?(SIDLE_ALONG_BUTTON)
       @next_input = 6
     elsif Input.trigger?(Input::DOWN)
-      @translate = Input.press?(Input::C) || Saba::Three_D::ENABLE_TRANSLATION_WITH_DOWN
+      @translate = Input.press?(SIDLE_ALONG_BUTTON) || ENABLE_TRANSLATION_WITH_DOWN
       @next_input = 2
     elsif Input.trigger?(Input::LEFT)
-      @translate = Input.press?(Input::C)
+      @translate = Input.press?(SIDLE_ALONG_BUTTON)
       @next_input = 4
     elsif Input.trigger?(Input::R)
-      return unless Saba::Three_D::ENABLE_TRANSLATION_WITH_LR
+      return unless ENABLE_TRANSLATION_WITH_LR
       @translate = true
       @next_input = 6
     elsif Input.trigger?(Input::L)
-      return unless Saba::Three_D::ENABLE_TRANSLATION_WITH_LR
+      return unless ENABLE_TRANSLATION_WITH_LR
       @translate = true
       @next_input = 4
     end
