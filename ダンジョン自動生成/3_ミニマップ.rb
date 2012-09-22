@@ -1,6 +1,6 @@
 #==============================================================================
-# ■ ダンジョン生成7_2
-#   @version 0.14 12/05/05 RGSS3
+# ■ ダンジョン生成9
+#   @version 0.18 12/09/22 RGSS3
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　
@@ -465,26 +465,12 @@ end
 class Spriteset_Map
   attr_reader :character_sprites
   #--------------------------------------------------------------------------
-  # ● オブジェクト初期化
-  #--------------------------------------------------------------------------
-  alias saba_minimap_initialize initialize
-  def initialize
-    saba_minimap_initialize
-    
-    @mini_map = Sprite_MiniMap.new(@viewport2)
-    if $game_map.dungeon?
-      update
-    else
-      @mini_map.visible = false
-    end
-  end
-  #--------------------------------------------------------------------------
   # ● 解放
   #--------------------------------------------------------------------------
   alias saba_minimap_dispose dispose
   def dispose
-    saba_minimap_dispose
     @mini_map.dispose if @mini_map
+    saba_minimap_dispose
   end
   #--------------------------------------------------------------------------
   # ● フレーム更新
@@ -492,18 +478,18 @@ class Spriteset_Map
   alias saba_minimap_update update
   def update
     saba_minimap_update
-    return unless @mini_map
     if $game_map.dungeon?
+      @mini_map = Sprite_MiniMap.new(@viewport2) unless @mini_map
       @mini_map.visible = true
       @mini_map.update
     else
-      @mini_map.visible = false
+      @mini_map.visible = false if @mini_map
     end
   end
   #--------------------------------------------------------------------------
   # ● クリア
   #--------------------------------------------------------------------------
   def clear_minimap
-    @mini_map.clear
+    @mini_map.clear if @mini_map
   end
 end

@@ -1,6 +1,6 @@
 #==============================================================================
-# ■ ダンジョン生成6
-#   @version 0.14 12/01/21 RGSS3
+# ■ ダンジョン生成9
+#   @version 0.18 12/09/22 RGSS3
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　
@@ -700,23 +700,6 @@ end
 
 class Spriteset_Map
   #--------------------------------------------------------------------------
-  # ● オブジェクト初期化
-  #--------------------------------------------------------------------------
-  alias saba_dungeon_initialize initialize
-  def initialize
-    saba_dungeon_initialize
-    @dark_sprite = Sprite_Dark.new(@viewport_dark)
-    update_dark_sprite_visible
-  end
-  #--------------------------------------------------------------------------
-  # ● ビューポートの作成
-  #--------------------------------------------------------------------------
-  alias saba_dungeon_create_viewports create_viewports
-  def create_viewports
-    saba_dungeon_create_viewports
-    @viewport_dark = Viewport.new
-  end
-  #--------------------------------------------------------------------------
   # ● フレーム更新
   #--------------------------------------------------------------------------
   alias saba_dungeon_update update
@@ -734,13 +717,15 @@ class Spriteset_Map
   # ● 暗闇スプライトの表示更新
   #--------------------------------------------------------------------------
   def update_dark_sprite_visible
-    if @dark_sprite
-      if $game_map.dungeon?
-        @dark_sprite.visible = true
-        @dark_sprite.update
-      else
-        @dark_sprite.visible = false
+    if $game_map.dungeon?
+      unless @dark_sprite
+        @viewport_dark = Viewport.new
+        @dark_sprite = Sprite_Dark.new(@viewport_dark)
       end
+      @dark_sprite.visible = true
+      @dark_sprite.update
+    else
+      @dark_sprite.visible = false if @dark_sprite
     end
   end
   #--------------------------------------------------------------------------
@@ -757,7 +742,7 @@ class Spriteset_Map
   alias saba_dungeon_dispose_viewports dispose_viewports
   def dispose_viewports
     saba_dungeon_dispose_viewports
-    @viewport_dark.dispose
+    @viewport_dark.dispose if @viewport_dark
   end
   #--------------------------------------------------------------------------
   # ● キャラクタースプライトの作成
