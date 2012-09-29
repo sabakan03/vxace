@@ -258,8 +258,10 @@ class Game_Actor
     else
       ret.push($data_states[Saba::Sekaiju::BACK_STATE_ID]) 
       unless equip_back_attack?
-        unless (current_action && current_action.item && current_action.item.can_back_attack?)
-          ret.push($data_states[Saba::Sekaiju::BACK_STATE_ID2]) 
+        if (current_action && current_action.item)
+          unless current_action.item.can_back_attack?
+            ret.push($data_states[Saba::Sekaiju::BACK_STATE_ID2]) 
+          end
         end
       end
     end
