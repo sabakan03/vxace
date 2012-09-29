@@ -1,10 +1,25 @@
 #==============================================================================
 # ■ 世界樹の迷宮っぽいバトルステータス
-#   @version 0.16 2012/09/09
+#   @version 0.17 2012/09/29
 #   @author さば缶
 #------------------------------------------------------------------------------
-# 　武器防具のメモ欄に <長射程> と記述すると、
-#   後列でもステート33 がつかなくなります
+#   ■使い方
+#     スクリプト、画像ファイルをコピーして、ステート31～33もコピーしてください。
+#
+#   ■このスクリプトには前列、後列の概念があります。
+#     ▲前列の人には自動でステート31番がつきます。
+#       →攻撃力UP、狙われ率UPなどを設定するとそれらしくなります。
+#
+#     ▲後列の人には自動でステート32番がつきます。
+#       →防御力UP、狙われ率DOWNなどを設定するとそれらしくなります。
+#
+#     ▲後列から攻撃する場合、その瞬間だけステート33番がつきます。
+#       →攻撃力DOWN、命中力DOWNなどを設定するとそれらしくなります。
+#      ※ 武器防具のメモ欄に <長射程> と記述すると、
+#         後列でもステート33 がつかなくなります
+#      ※ スキルも同じくメモ欄に <長射程> と記述すると、
+#         後列でもステート33 がつかなくなります
+#
 #==============================================================================
 module Saba
   module Sekaiju
@@ -28,7 +43,7 @@ module Saba
     # キャラ名の最大値
     MAX_CHAR_NAME = 6
     
-    # メニュー画面ではデフォルトのものを使用する場合 true
+    # メニュー画面ではデフォルトメニューを使用する場合 true
     ENABLE_DEFAULT_MENU_STATUS = false
   end
 end
@@ -243,7 +258,9 @@ class Game_Actor
     else
       ret.push($data_states[Saba::Sekaiju::BACK_STATE_ID]) 
       unless equip_back_attack?
-        ret.push($data_states[Saba::Sekaiju::BACK_STATE_ID2]) 
+        unless (current_action && current_action.item && current_action.item.can_back_attack?)
+          ret.push($data_states[Saba::Sekaiju::BACK_STATE_ID2]) 
+        end
       end
     end
     return ret
@@ -255,11 +272,7 @@ class Game_Actor
   # ○ 長射程の武器防具を装備しているか？
   #--------------------------------------------------------------------------
   def equip_back_attack?
-    @equips.each do |item|
-      next unless item.object
-      return true if item.object.can_back_attack?
-    end
-    return false
+    return ! @equips.select { |item| item.object && item.object.can_back_attack? }.empty?
   end
 end
 
@@ -912,38 +925,29 @@ class Sprite_Base
   end
 end
 class RPG::BaseItem
+  #--------------------------------------------------------------------------
+  # ○ 列全体を対象にするか？
+  #--------------------------------------------------------------------------
   def target_line?
-    if @target_line == nil
-      @target_line = false
-      if note.include?("<列>")
-        @target_line = true
-      end
-    end
-    return @target_line
+    @target_line ||= /<列>/ =~ note
   end
-  
+  #--------------------------------------------------------------------------
+  # ○ 前列のだれか、もしくは前列全体を対象にするか？
+  #--------------------------------------------------------------------------
   def target_front?
-    if @target_front == nil
-      @target_front = false
-      if note.include?("<前列>")
-        @target_front = true
-      end
-    end
-    return @target_front
+    @target_front ||= /<前列>/ =~ note
   end
-  
+  #--------------------------------------------------------------------------
+  # ○ 後列のだれか、もしくは後列全体を対象にするか？
+  #--------------------------------------------------------------------------
   def target_back?
-    if @target_back == nil
-      @target_back = false
-      if note.include?("<後列>")
-        @target_back = true
-      end
-    end
-    return @target_back
+    @target_back ||= /<後列>/ =~ note
   end
-  
+  #--------------------------------------------------------------------------
+  # ○ 後列から攻撃してもダメージが落ちないか？
+  #--------------------------------------------------------------------------
   def can_back_attack?
-    return note.include?("<長射程>")
+    @back_attack ||= /<長射程>/ =~ note
   end
 end
 
