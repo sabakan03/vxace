@@ -90,7 +90,7 @@ class Game_Action
   #--------------------------------------------------------------------------
   alias saba_provocation_targets_for_opponents targets_for_opponents
   def targets_for_opponents
-    if item.for_random? || item.for_one? && @subject.provoked?
+    if (item.for_random? || item.for_one?) && @subject.provoked?
       return [@subject.provoking_battler]
     else
       saba_provocation_targets_for_opponents
