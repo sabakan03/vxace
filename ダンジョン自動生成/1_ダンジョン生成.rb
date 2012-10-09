@@ -1,6 +1,6 @@
 #==============================================================================
-# ■ ダンジョン生成9
-#   @version 0.18 12/09/22 RGSS3
+# ■ ダンジョン生成12
+#   @version 0.19 12/10/09 RGSS3
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　
@@ -140,6 +140,7 @@ end
 class Game_Map
   attr_reader :map
   attr_accessor :new_events
+  attr_accessor :map_infos
   #--------------------------------------------------------------------------
   # ● 定数
   #--------------------------------------------------------------------------
@@ -263,9 +264,6 @@ class Game_Map
   def dungeon?
     if @random_dungeon != nil
       return @random_dungeon
-    end
-    unless @map_infos
-      @map_infos = load_data("Data/MapInfos.rvdata2")
     end
     @random_dungeon = @map_infos[@map_id].name.include?("@")
     return @random_dungeon
@@ -893,5 +891,26 @@ class Game_Character
     sx = distance_x_from(x)
     sy = distance_y_from(y)
     return [sx.abs, sy.abs].max
+  end
+end
+
+class << DataManager
+  alias saba_dungeon_create_game_objects create_game_objects
+  def create_game_objects
+    saba_dungeon_create_game_objects
+    $game_map.map_infos = load_data("Data/MapInfos.rvdata2")
+  end
+  alias saba_dungeon_load_game_without_rescue load_game_without_rescue
+  def load_game_without_rescue(index)
+    saba_dungeon_load_game_without_rescue(index)
+    $game_map.map_infos = load_data("Data/MapInfos.rvdata2")
+  end
+  #--------------------------------------------------------------------------
+  # ● データが更新されている場合はマップを再読み込み(再定義)
+  #--------------------------------------------------------------------------
+  alias saba_dungeon_reload_map_if_updated reload_map_if_updated
+  def reload_map_if_updated
+    return if $game_map.dungeon?
+    saba_dungeon_reload_map_if_updated
   end
 end
