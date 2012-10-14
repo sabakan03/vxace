@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョン オートマッピング
-#   @version 1.7 12/09/05
+#   @version 1.91 12/10/14
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ■ 機能
@@ -322,7 +322,7 @@ class Window_AutoMapping < Window_Base
       @sprite.refresh
       @last_map_id = $game_map.map_id
     end
-    if $game_switches[HIDE_ALL_SWITCH]
+    if $game_switches[HIDE_ALL_SWITCH] || $game_switches[HIDE_AUTOMAP_SWITCH]
       self.visible = false
       return
     end
