@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 挑発
-#   @version 0.1 12/10/01
+#   @version 0.2 12/10/23
 #   @author さば缶
 #------------------------------------------------------------------------------
 # 　挑発ステートをつけられた敵が、挑発ステートをつけた相手に
@@ -91,7 +91,14 @@ class Game_Action
   alias saba_provocation_targets_for_opponents targets_for_opponents
   def targets_for_opponents
     if (item.for_random? || item.for_one?) && @subject.provoked?
-      return [@subject.provoking_battler]
+      if item.for_random?
+        num = item.number_of_targets
+      elsif item.for_one?
+        num = 1 + (attack? ? subject.atk_times_add.to_i : 0)
+      else
+        num = 1
+      end
+      return [@subject.provoking_battler] * num
     else
       saba_provocation_targets_for_opponents
     end
