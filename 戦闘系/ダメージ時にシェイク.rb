@@ -18,8 +18,21 @@ module Saba
     SHAKE_ENABLED = true
     # シェイクの時間です。
     SHAKE_DURATION = 8
+    
     # シェイクの強さです。
-    SHAKE_POWER = 8
+    # 最大HPに対する与えたダメージの割合（単位パーセント）と、
+    # シェイクの強さのマップ
+    # SHAKE_POWER_RATES = {0=>8}
+    # と書くと一定の強さでシェイクします。
+    SHAKE_POWER_RATES = {
+                             0 => 2,    # すこしでもダメージをあたえたらシェイク
+                            10 => 4,    # 一度に 10% ダメージでちょいシェイク
+                            30 => 8,    # 一度に 30% ダメージでだいぶシェイク
+                            50 => 16    # 一度に 50% ダメージですごくシェイク
+                        }
+    
+
+    
     # シェイクの速度です。
     SHAKE_SPEED = 10
     # 同時にピクチャもシェイクする場合、trueに設定します。
@@ -40,19 +53,43 @@ class Spriteset_Battle
   end
 end
 
+class Game_Actor
+  def shake_power
+    return 0
+  end
+end
 
+class Game_Enemy
+  include Saba::BattleEffect
+  attr_reader :shake_power
+  #--------------------------------------------------------------------------
+  # ● ダメージ効果の実行
+  #--------------------------------------------------------------------------
+  alias saba_battle_effect_perform_damage_effect perform_damage_effect
+  def perform_damage_effect
+    return if result.hp_damage <= 0
+    return if mhp <= 0
+    rate = result.hp_damage * 100 / mhp
+    power = 0
+    SHAKE_POWER_RATES.keys.each do |per|
+      next if per > rate
+      next if SHAKE_POWER_RATES[per] < power
+      power = SHAKE_POWER_RATES[per]
+    end
+    @shake_power = power
+    saba_battle_effect_perform_damage_effect
+  end
+end
 
 class Sprite_Battler
   include Saba::BattleEffect
 
- 
   attr_writer :picture_viewport
  
   alias saba_battle_effect_initialize initialize
   def initialize(viewport, battler = nil)
     saba_battle_effect_initialize(viewport, battler)
     @shake = 0
-    @shake_power = SHAKE_POWER
     @shake_speed = SHAKE_SPEED
     @shake_direction = 1
   end
@@ -80,7 +117,6 @@ class Sprite_Battler
       @effect_duration = SHAKE_DURATION
     end
   end
- 
   #--------------------------------------------------------------------------
   # ● エフェクトの更新
   #--------------------------------------------------------------------------
@@ -90,13 +126,10 @@ class Sprite_Battler
       case @effect_type
       when :shake
         update_shake
-        @effect_duration -= 1
-        return
       end
     end
     saba_battle_effect_update_effect
   end
- 
   #--------------------------------------------------------------------------
   # ● シェイクエフェクトの更新
   #--------------------------------------------------------------------------
@@ -104,16 +137,16 @@ class Sprite_Battler
     self.blend_type = 0
     self.color.set(0, 0, 0, 0)
     self.opacity = 255
-    delta = (@shake_power * @shake_speed * @shake_direction) / 10.0
+    delta = (@battler.shake_power * @shake_speed * @shake_direction) / 10.0
     if @effect_duration <= 1 and @shake * (@shake + delta) < 0
       @shake = 0
     else
       @shake += delta
     end
-    if @shake > @shake_power * 2
+    if @shake > @battler.shake_power * 2
       @shake_direction = -1
     end
-    if @shake < - @shake_power * 2
+    if @shake < - @battler.shake_power * 2
       @shake_direction = 1
     end
     if @use_sprite && (! @battler.actor?)
@@ -128,7 +161,6 @@ class Sprite_Battler
       end
     end
   end
- 
   def random_direction
     if rand(2) == 0
       return 1
