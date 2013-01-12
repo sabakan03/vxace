@@ -1,6 +1,6 @@
 #==============================================================================
 # ■ 3Dダンジョンプレイヤー移動
-#   @version 1.9 12/09/20
+#   @version 1.91 13/01/13
 #   @author さば缶
 #------------------------------------------------------------------------------
 # ●内部的には2Dマップを歩いてるのと変わらない動作をしています。
@@ -510,8 +510,13 @@ class Game_Player
       $game_map.middle
       refresh_3d
     end
+     
     move_straight(@direction)
-    
+    if Saba::Three_D::NOT_DRAW_MIDDLE_MOTION
+      @move_front = false
+      refresh_3d
+      @move_front = true
+    end
     unless @move_succeed
       if @old == 8
         unless Input.trigger?(Input::UP) #上おしっぱによる連続壁激突を防ぎます。
@@ -805,7 +810,10 @@ class Game_Player
       check_event_trigger_touch_down
       return
     end
-    $game_map.middle
+    
+    unless Saba::Three_D::NOT_DRAW_MIDDLE_MOTION
+      $game_map.middle
+    end
     case @direction
     when 2;  translate_up
     when 4;  translate_right
@@ -813,7 +821,14 @@ class Game_Player
     when 8;  translate_down
     end
     
-    refresh_3d
+    if Saba::Three_D::NOT_DRAW_MIDDLE_MOTION
+      @move_front = false
+      refresh_3d
+      @move_front = true
+    else
+      refresh_3d
+    end
+    
     if @move_failed
       if @old == 2
         unless Input.trigger?(Input::DOWN) #下おしっぱによる連続壁激突を防ぎます。
