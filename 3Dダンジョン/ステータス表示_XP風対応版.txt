@@ -1,0 +1,108 @@
+#==============================================================================
+# ■ 3Dダンジョン ステータス表示、XP風戦闘との併用スクリプト
+#   @version 1.7 12/09/16
+#   @author さば缶
+#------------------------------------------------------------------------------
+#==============================================================================
+module Saba
+  module Three_D
+    # XP風バトルのステータスウィンドウの顔グラの位置調整用
+    XP_FACE_X = -12
+    XP_FACE_Y = 8
+  end
+end
+
+class Scene_Map
+  #--------------------------------------------------------------------------
+  # ○ ステータスウィンドウの作成
+  #--------------------------------------------------------------------------
+  def create_status_window
+    return if $game_map.is_2d?
+    
+    @status_window2 = Window_BattleStatus2.new
+    @status_window2.y = Graphics.height - @status_window2.height
+    
+    @status_window = Window_BattleStatus.new
+  end
+  #--------------------------------------------------------------------------
+  # ○ ステータスウィンドウの破棄
+  #--------------------------------------------------------------------------
+  def dispose_status_window
+    @status_window.dispose
+    @status_window = nil
+    
+    @status_window2.dispose
+    @status_window2 = nil
+  end
+  
+  def create_automap_window
+    return if $game_map.is_2d?
+    w = 128
+    h = 120
+    # オートマッピングの座標を変更
+    @automapping_window = Window_AutoMapping.new(Graphics.width-w, 0, w, h)
+  end
+end
+
+class Window_BattleStatus
+  def visible=(b)
+    super
+    if @sprite_viewport
+      @sprite_viewport.visible = b
+    end
+  end
+end
+
+class Window_BattleStatus2 < Window_BattleStatus
+  include Saba::Three_D
+  def initialize
+    $game_party.set_members_xyz
+    $game_party.set_members_battle_graphic
+    super
+    update
+    self.opacity = 255
+  end
+  #--------------------------------------------------------------------------
+  # ● ウィンドウ高さの取得
+  #--------------------------------------------------------------------------
+  def window_height
+    112
+  end
+  #--------------------------------------------------------------------------
+  # ● ウィンドウ幅の取得
+  #--------------------------------------------------------------------------
+  def window_width
+    Graphics.width
+  end
+   #--------------------------------------------------------------------------
+  # ● 基本エリアの描画
+  #--------------------------------------------------------------------------
+  def draw_basic_area(rect, actor)
+    return if actor.dead?
+    contents.blt(rect.x + XP_FACE_X, rect.y+XP_FACE_Y, actor.facebattler, actor.facebattler.rect)
+  end
+  #--------------------------------------------------------------------------
+  # ● リフレッシュ
+  #--------------------------------------------------------------------------
+  def refresh
+    draw_all_items
+  end
+  #--------------------------------------------------------------------------
+  # ● 項目の描画
+  #--------------------------------------------------------------------------
+  def draw_item(index)
+    actor = $game_party.battle_members[index]
+    draw_basic_area(basic_area_rect(index), actor)
+  end
+  #--------------------------------------------------------------------------
+  # ● フレーム更新
+  #--------------------------------------------------------------------------
+  def update
+    super
+    if $game_switches[HIDE_ALL_SWITCH]
+      self.visible = false
+      return
+    end
+    self.visible = ! ($game_message.busy? && $game_message.position == 2)
+  end
+end
